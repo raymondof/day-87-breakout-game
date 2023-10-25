@@ -1,7 +1,9 @@
+import time
 from turtle import Screen
 from paddle import Paddle
 from ball import Ball
 from wall import Wall
+from scoreboard import Scoreboard
 
 
 screen = Screen()
@@ -17,30 +19,58 @@ paddle = Paddle(paddle_start_coordinates)
 ball = Ball()
 wall = Wall()
 wall.build_wall()
+scoreboard = Scoreboard()
 
 screen.listen()
 screen.onkey(paddle.move_left, "Left")
 screen.onkey(paddle.move_right, "Right")
 
-counter = 0
+balls = 3
 game_is_on = True
 unique_brick = []
+balls_2_last_x = []
 while game_is_on:
     screen.update()
+    time.sleep(0.01)
     ball.move_ball()
+
+    balls_2_last_x.append(ball.xcor())
+    if len(balls_2_last_x) > 2:
+        balls_2_last_x.pop(0)
+
+
+
 
     # Detect wall collision
     if ball.xcor() > 390 or ball.xcor() < -390:
         ball.bounce_x()
 
+    # Detect floor "collision"
+    if ball.ycor() < -290:
+        balls -= 1
+        ball.hideturtle()
+        ball.clear()
+        if balls > 0:
+            ball = Ball()
+        else:
+            scoreboard.end_game()
+
     # Detect roof collision
-    if ball.ycor() > 290 or ball.ycor() < -290:
-        ball.bounce_y()
+    if ball.ycor() > 290:
+        # ball.bounce_y()
+        scoreboard.finish()
 
     # Detect paddle collision
     if ball.ycor() < -230 and ball.distance(paddle) < 50:
-        ball.bounce_y()
+        if balls_2_last_x[0] < balls_2_last_x[1]:
+            direction = 0  # ball is coming from left to right
+        else:
+            direction = 1  # ball is coming from right to left
+        paddle_ball_x = ball.xcor() - paddle.xcor()
+        print(paddle_ball_x)
+        ball.paddle_bounce_y(position=paddle_ball_x, direction=direction)
 
+    # Detect brick collision
     for brick in wall.brick_pos:
         x, y = brick
         if brick not in unique_brick:
@@ -53,6 +83,9 @@ while game_is_on:
                 # add the brick to list of unique bricks and remove it so that it can't be hit again
                 unique_brick.append(brick)
                 wall.remove_brick(brick)
+                scoreboard.score += 1
+                scoreboard.write_score()
+                #scoreboard.reset()
 
                 # Trajectory decision
                 # Determine if the ball is approaching from sides or below/above
@@ -73,6 +106,8 @@ while game_is_on:
                     ball.bounce_x()
                     ball.bounce_y()
                     print("corner hit")
+
+
 
 
 screen.exitonclick()
