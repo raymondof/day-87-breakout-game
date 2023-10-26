@@ -9,7 +9,6 @@ class Ball(Turtle):
         self.penup()
         self.move_x = 3
         self.move_y = 3
-        self.move_speed = 3
 
     def move_ball(self):
         new_x = self.xcor() + self.move_x
@@ -21,27 +20,18 @@ class Ball(Turtle):
 
     def bounce_y(self):
         self.move_y *= -1
-        print(f"bounce_e {self.move_y}")
 
     def paddle_bounce_y(self, position, direction):
-        angle = position / 50
-        print(f"paddle position {position}")
-        if position < 10 and position > -10:
+        if 10 > position > -10:  # ball has hit middle of the paddle
+            self.move_y *= -1  # bounce only in y direction
+        elif position < -10 and direction == 0:  # ball is coming from left and hits left side of the paddle
+            self.move_y *= -1  # ball is returned to same direction
+            self.move_x *= -1
+        elif position > 10 and direction == 1:  # ball is coming from right and hits right side of the paddle
+            self.move_y *= -1  # ball is returned to same direction
+            self.move_x *= -1
+        else:  # otherwise the ball is bounced in y direction
             self.move_y *= -1
-            print("mailan keskelle")
-        elif position < -10 and direction == 0:
-            print("mailan vasen reuna")
-            self.move_y *= -1# + self.move_speed * angle
-            self.move_x *= -1# - self.move_speed * angle
-        elif position > 10 and direction == 1:
-            print("mailan oikea reuna")
-            self.move_y *= -1
-            self.move_x *= -1# self.move_speed * angle
-        else:
-            self.move_y *= -1
-        # self.move_y += position
-        # self.move_x -= position
-        print(f"paddle_bounce_y {self.move_y}")
-        print(f"paddle_bounce_x {self.move_x}")
+
 
 
