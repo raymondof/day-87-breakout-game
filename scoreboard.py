@@ -1,4 +1,3 @@
-import turtle
 from turtle import Turtle
 FONT = ("Courier", 18, "normal")
 
@@ -10,24 +9,25 @@ class Scoreboard(Turtle):
         with open("data.txt") as data:
             self.best_score = int(data.read())
         self.update_high_score()
-        self.color("green")
+        self.color("white")
         self.hideturtle()
         self.penup()
-        self.goto(0, -280)
+        self.goto(0, 270)
         self.space_pos = 0
-        self.available_ship_positions = []
 
-    def write_score(self):
+    def write_score(self, balls):
         self.clear()
-        self.setposition(280, -280)
-        self.write(f"Score: {self.score}",
+        self.setposition(0, 270)
+        self.write(f"Score: {self.score} "
+                   f"Best score: {self.best_score} "
+                   f"Balls left: {balls}",
                    move=False, align="center", font=FONT)
 
     def write_instructions(self):
         self.clear()
         self.setposition(0, 0)
         self.write(f"Your task is to escape breaking as few bricks as\n possible "
-                   f"start the game by pressing ENTER",
+                   f"start the game by pressing SPACE",
                    move=False, align="center", font=FONT)
 
     def game_on_pause(self):
@@ -63,41 +63,3 @@ class Scoreboard(Turtle):
     def update_high_score(self):
         with open("data.txt", mode="w") as data:
             data.write(str(self.best_score))
-
-    def make_line(self):
-        line = turtle.Turtle()
-        line.hideturtle()
-        line.goto(-400, -240)
-        line.color("green")
-        line.pendown()
-        line.forward(800)
-        line.penup()
-
-    def available_ships(self, ships):
-        ship_x = -360
-        ship_y = -260
-
-        for _ in range(ships - 1):
-            new_ship = turtle.Turtle()
-            new_ship.penup()
-            new_ship.goto(ship_x, ship_y)
-            new_ship.shapesize(stretch_wid=5, stretch_len=2)
-            new_ship.settiltangle(90)
-            new_ship.color("green")
-            new_ship.shape("classic")
-            new_ship.showturtle()
-            ship_x += 60
-
-            self.available_ship_positions.append(new_ship)
-
-    def remove_ship(self):
-        removable_ship = self.available_ship_positions.pop()
-        removable_ship.hideturtle()
-        removable_ship.clear()
-
-
-
-
-
-
-
